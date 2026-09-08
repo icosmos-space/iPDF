@@ -17,9 +17,9 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "ipdf",
-		Width:  1024,
-		Height: 768,
+		Title:  "iPDF",
+		Width:  1100,
+		Height: 800,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

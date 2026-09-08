@@ -1,26 +1,94 @@
-html {
-    background-color: rgba(27, 38, 54, 1);
-    text-align: center;
-    color: white;
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --text: #1a1f24;
+  --muted: #667085;
+  --border: #e4e7ec;
+  --accent: #0b6bcb;
+  --accent-hover: #0958a8;
+  --danger: #c62828;
+  --ok: #1b7f4e;
+  --radius: 8px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
 }
 
-body {
-    margin: 0;
-    color: white;
-    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+* {
+  box-sizing: border-box;
 }
 
-@font-face {
-    font-family: "Nunito";
-    font-style: normal;
-    font-weight: 400;
-    src: local(""),
-    url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 #app {
-    height: 100vh;
-    text-align: center;
+  min-height: 100dvh;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--accent);
+}
+
+.tool h1 {
+  margin: 0.35rem 0 0.25rem;
+  font-size: 1.5rem;
+}
+.tool .desc {
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+.tool .back {
+  font-size: 0.875rem;
+  text-decoration: none;
+  color: var(--muted);
+}
+.tool .back:hover {
+  color: var(--accent);
+}
+.tool .run {
+  margin-top: 1rem;
+  border: none;
+  border-radius: 6px;
+  padding: 0.55rem 1.1rem;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+.tool .run:disabled {
+  opacity: 0.6;
+}
+.tool .options {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+.tool .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.tool .field select,
+.tool .field input[type='number'] {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.65rem;
+  background: #fff;
+  min-width: 140px;
 }
