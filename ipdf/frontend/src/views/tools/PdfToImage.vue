@@ -45,10 +45,7 @@ async function run() {
   <section class="tool">
     <router-link class="back" to="/">← 返回工具列表</router-link>
     <h1>PDF 转图片</h1>
-    <p class="desc">
-      使用 pdfcpu 提取 PDF 中的嵌入图片，并导出为 JPG / PNG。
-      （无法将纯文字页栅格化；扫描件或图片合成的 PDF 效果最好。）
-    </p>
+    <p class="desc">将每一页渲染为 JPG / PNG（go-fitz / MuPDF，静态链接进本机程序）。</p>
     <FileDropzone
       accept-label="选择 PDF"
       :files="files"
@@ -65,7 +62,7 @@ async function run() {
         </select>
       </label>
       <label class="field">
-        <span>DPI（预留）</span>
+        <span>DPI</span>
         <input v-model.number="dpi" type="number" min="72" max="300" step="12" />
       </label>
     </div>

@@ -2,25 +2,20 @@ package pdf
 
 import (
 	"fmt"
-	"image"
-	_ "image/gif"
 	"image/jpeg"
 	"image/png"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/pdfcpu/pdfcpu/pkg/api"
-	_ "golang.org/x/image/bmp"
-	_ "golang.org/x/image/tiff"
-	"golang.org/x/image/webp"
+	"github.com/gen2brain/go-fitz"
 
 	"ipdf/internal/job"
 )
 
-// ToImages extracts embedded images from a PDF via pdfcpu.
-// Note: pdfcpu cannot rasterize full pages; this exports image XObjects.
-// format: jpg | png (converts when needed); dpi is accepted for API compat but unused.
+// ToImages rasterizes each PDF page to an image via go-fitz (MuPDF).
+// format: jpg | png; dpi defaults to 144.
+// Build with CGO so the bundled MuPDF static libs are linked into the binary.
 func ToImages(path, format string, dpi int, outDir string) (ToolResult, error) {
 	if err := validatePDFInput(path); err != nil {
 		return ToolResult{}, err
@@ -32,7 +27,9 @@ func ToImages(path, format string, dpi int, outDir string) (ToolResult, error) {
 	if format != "jpg" && format != "png" {
 		return ToolResult{}, fmt.Errorf("不支持的格式: %s（支持 jpg / png）", format)
 	}
-	_ = dpi
+	if dpi <= 0 {
+		dpi = 144
+	}
 	if outDir == "" {
 		return ToolResult{}, fmt.Errorf("请指定输出目录")
 	}
@@ -46,100 +43,52 @@ func ToImages(path, format string, dpi int, outDir string) (ToolResult, error) {
 	}
 	defer ws.Cleanup()
 
-	tmpDir := ws.Path("images")
+	doc, err := fitz.New(path)
+	if err != nil {
+		return ToolResult{}, fmt.Errorf("打开 PDF 失败: %w", err)
+	}
+	defer doc.Close()
+
+	base := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+	tmpDir := ws.Path("pages")
 	if err := os.MkdirAll(tmpDir, 0o755); err != nil {
 		return ToolResult{}, err
 	}
 
-	if err := api.ExtractImagesFile(path, tmpDir, nil, conf()); err != nil {
-		return ToolResult{}, fmt.Errorf("提取图片失败: %w", err)
-	}
-
-	entries, err := os.ReadDir(tmpDir)
-	if err != nil {
-		return ToolResult{}, err
-	}
-
-	base := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+	n := doc.NumPage()
 	var outs []string
-	idx := 0
-	for _, e := range entries {
-		if e.IsDir() {
-			continue
+	for i := 0; i < n; i++ {
+		img, err := doc.ImageDPI(i, float64(dpi))
+		if err != nil {
+			return ToolResult{}, fmt.Errorf("渲染第 %d 页失败: %w", i+1, err)
 		}
-		src := filepath.Join(tmpDir, e.Name())
-		ext := strings.ToLower(filepath.Ext(e.Name()))
-		if !isImageExt(ext) {
-			continue
+
+		name := fmt.Sprintf("%s_p%03d.%s", base, i+1, format)
+		tmpPath := filepath.Join(tmpDir, name)
+		f, err := os.Create(tmpPath)
+		if err != nil {
+			return ToolResult{}, err
 		}
-		idx++
-		outName := fmt.Sprintf("%s_img%03d.%s", base, idx, format)
-		dst := filepath.Join(outDir, outName)
-		if err := convertOrCopyImage(src, dst, format); err != nil {
-			return ToolResult{}, fmt.Errorf("处理 %s 失败: %w", e.Name(), err)
+		switch format {
+		case "png":
+			err = png.Encode(f, img)
+		default:
+			err = jpeg.Encode(f, img, &jpeg.Options{Quality: 90})
+		}
+		_ = f.Close()
+		if err != nil {
+			return ToolResult{}, fmt.Errorf("编码第 %d 页失败: %w", i+1, err)
+		}
+
+		dst := filepath.Join(outDir, name)
+		if err := job.MoveOrCopy(tmpPath, dst); err != nil {
+			return ToolResult{}, err
 		}
 		outs = append(outs, dst)
 	}
 
-	if len(outs) == 0 {
-		return ToolResult{}, fmt.Errorf("未找到可提取的嵌入图片（pdfcpu 无法将文字页栅格化为图片；扫描件/图片型 PDF 通常可提取）")
-	}
-
 	return ToolResult{
 		OutputPaths: outs,
-		Message:     fmt.Sprintf("已提取 %d 张嵌入图片到 %s", len(outs), outDir),
+		Message:     fmt.Sprintf("已导出 %d 张图片到 %s", len(outs), outDir),
 	}, nil
-}
-
-func isImageExt(ext string) bool {
-	switch ext {
-	case ".jpg", ".jpeg", ".png", ".webp", ".tif", ".tiff", ".gif", ".bmp":
-		return true
-	default:
-		return false
-	}
-}
-
-func convertOrCopyImage(src, dst, format string) error {
-	srcExt := strings.ToLower(filepath.Ext(src))
-	if (srcExt == ".jpg" || srcExt == ".jpeg") && format == "jpg" {
-		return job.CopyFile(src, dst)
-	}
-	if srcExt == ".png" && format == "png" {
-		return job.CopyFile(src, dst)
-	}
-
-	f, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	var img image.Image
-	switch srcExt {
-	case ".png":
-		img, err = png.Decode(f)
-	case ".jpg", ".jpeg":
-		img, err = jpeg.Decode(f)
-	case ".webp":
-		img, err = webp.Decode(f)
-	default:
-		img, _, err = image.Decode(f)
-	}
-	if err != nil {
-		return err
-	}
-
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	switch format {
-	case "png":
-		return png.Encode(out, img)
-	default:
-		return jpeg.Encode(out, img, &jpeg.Options{Quality: 92})
-	}
 }

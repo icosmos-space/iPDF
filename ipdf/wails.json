@@ -9,5 +9,12 @@
   "author": {
     "name": "王新勇(Tacey Wong)",
     "email": "xinyong.w@gmail.com"
+  },
+  "info": {
+    "companyName": "iPDF",
+    "productName": "iPDF",
+    "productVersion": "0.1.0",
+    "copyright": "Copyright 2026",
+    "comments": "Local PDF toolbox (pdfcpu + go-fitz static MuPDF)"
   }
 }

@@ -46,7 +46,7 @@ func (a *App) CompressPDF(path, quality, outPath string) (ToolResult, error) {
 	return pdf.Compress(path, quality, outPath)
 }
 
-// PDFToImages extracts embedded images from a PDF (pdfcpu; not full-page rasterize).
+// PDFToImages rasterizes PDF pages to images (go-fitz / MuPDF, statically linked).
 func (a *App) PDFToImages(path, format string, dpi int, outDir string) (ToolResult, error) {
 	return pdf.ToImages(path, format, dpi, outDir)
 }

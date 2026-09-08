@@ -10,7 +10,7 @@ const ready: Tool[] = [
   { title: 'PDF 合并', desc: '将多个 PDF 按顺序合并为一个文件', to: '/tools/merge' },
   { title: 'PDF 分割', desc: '按页、按范围或按每 N 页拆分', to: '/tools/split' },
   { title: 'PDF 压缩', desc: '优化体积，便于分享与存储', to: '/tools/compress' },
-  { title: 'PDF 转图片', desc: '提取 PDF 内嵌图片为 JPG / PNG', to: '/tools/pdf-to-image' },
+  { title: 'PDF 转图片', desc: '将每一页导出为 JPG / PNG', to: '/tools/pdf-to-image' },
   { title: '图片转 PDF', desc: '将 JPG / PNG / WEBP 拼成 PDF', to: '/tools/image-to-pdf' },
 ]
 
