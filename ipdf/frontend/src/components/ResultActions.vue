@@ -1,5 +1,8 @@
 <script lang="ts" setup>
+import { FolderOpen } from '@lucide/vue'
 import { OpenInExplorer } from '../../wailsjs/go/main/App'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const props = defineProps<{
   paths: string[]
@@ -7,8 +10,7 @@ const props = defineProps<{
 
 async function openFirst() {
   if (!props.paths.length) return
-  const p = props.paths[0]
-  await OpenInExplorer(p)
+  await OpenInExplorer(props.paths[0])
 }
 
 async function openDir() {
@@ -20,53 +22,23 @@ async function openDir() {
 </script>
 
 <template>
-  <div v-if="paths.length" class="results">
-    <h3>输出</h3>
-    <ul>
-      <li v-for="p in paths" :key="p">{{ p }}</li>
-    </ul>
-    <div class="actions">
-      <button type="button" class="btn" @click="openFirst">在资源管理器中显示</button>
-      <button v-if="paths.length > 1" type="button" class="btn ghost" @click="openDir">打开输出目录</button>
-    </div>
-  </div>
+  <Card v-if="paths.length" class="mt-4">
+    <CardHeader class="pb-3">
+      <CardTitle class="text-base">输出</CardTitle>
+    </CardHeader>
+    <CardContent class="space-y-3">
+      <ul class="space-y-1 text-sm text-muted-foreground break-all">
+        <li v-for="p in paths" :key="p">{{ p }}</li>
+      </ul>
+      <div class="flex flex-wrap gap-2">
+        <Button type="button" @click="openFirst">
+          <FolderOpen class="size-4" />
+          在资源管理器中显示
+        </Button>
+        <Button v-if="paths.length > 1" type="button" variant="outline" @click="openDir">
+          打开输出目录
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
 </template>
-
-<style scoped>
-.results {
-  margin-top: 1.25rem;
-  padding: 1rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-}
-h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-}
-ul {
-  margin: 0 0 0.75rem;
-  padding-left: 1.1rem;
-  font-size: 0.85rem;
-  color: var(--muted);
-  word-break: break-all;
-}
-.actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.btn {
-  border-radius: 6px;
-  border: 1px solid transparent;
-  padding: 0.4rem 0.85rem;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 600;
-}
-.btn.ghost {
-  background: #fff;
-  border-color: var(--border);
-  color: var(--text);
-}
-</style>

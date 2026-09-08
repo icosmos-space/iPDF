@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import FileDropzone from '../../components/FileDropzone.vue'
-import ProgressPanel from '../../components/ProgressPanel.vue'
-import ResultActions from '../../components/ResultActions.vue'
+import FileDropzone from '@/components/FileDropzone.vue'
+import ProgressPanel from '@/components/ProgressPanel.vue'
+import ResultActions from '@/components/ResultActions.vue'
 import { MergePDFs, SelectFiles, SelectSaveFile } from '../../../wailsjs/go/main/App'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 const files = ref<string[]>([])
 const loading = ref(false)
@@ -13,9 +15,11 @@ const outputs = ref<string[]>([])
 
 async function pick() {
   const selected = await SelectFiles('pdf')
-  if (selected?.length) {
-    files.value = [...files.value, ...selected]
-  }
+  if (selected?.length) addPaths(selected)
+}
+
+function addPaths(paths: string[]) {
+  files.value = [...files.value, ...paths]
 }
 
 function remove(i: number) {
@@ -54,21 +58,26 @@ async function run() {
 </script>
 
 <template>
-  <section class="tool">
-    <h1>PDF 合并</h1>
-    <p class="desc">按列表顺序合并多个 PDF。可用上下箭头调整顺序。</p>
-    <FileDropzone
-      accept-label="添加 PDF"
-      :multiple="true"
-      :files="files"
-      @pick="pick"
-      @remove="remove"
-      @move="move"
-      @clear="files = []"
-    />
-    <button class="run" type="button" :disabled="loading" @click="run">合并并保存</button>
-    <ProgressPanel :loading="loading" :error="error" :message="message" />
-    <ResultActions :paths="outputs" />
-  </section>
+  <Card>
+    <CardHeader>
+      <CardTitle>PDF 合并</CardTitle>
+      <CardDescription>按列表顺序合并多个 PDF，可用上下箭头调整顺序。</CardDescription>
+    </CardHeader>
+    <CardContent class="space-y-4">
+      <FileDropzone
+        accept-label="添加 PDF"
+        :multiple="true"
+        :files="files"
+        :accept-exts="['.pdf']"
+        @pick="pick"
+        @paths="addPaths"
+        @remove="remove"
+        @move="move"
+        @clear="files = []"
+      />
+      <Button type="button" :disabled="loading" @click="run">合并并保存</Button>
+      <ProgressPanel :loading="loading" :error="error" :message="message" />
+      <ResultActions :paths="outputs" />
+    </CardContent>
+  </Card>
 </template>
-

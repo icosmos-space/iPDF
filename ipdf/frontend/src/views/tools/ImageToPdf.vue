@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import FileDropzone from '../../components/FileDropzone.vue'
-import ProgressPanel from '../../components/ProgressPanel.vue'
-import ResultActions from '../../components/ResultActions.vue'
+import FileDropzone from '@/components/FileDropzone.vue'
+import ProgressPanel from '@/components/ProgressPanel.vue'
+import ResultActions from '@/components/ResultActions.vue'
 import { ImagesToPDF, SelectFiles, SelectSaveFile } from '../../../wailsjs/go/main/App'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 const files = ref<string[]>([])
 const loading = ref(false)
@@ -13,9 +15,11 @@ const outputs = ref<string[]>([])
 
 async function pick() {
   const selected = await SelectFiles('image')
-  if (selected?.length) {
-    files.value = [...files.value, ...selected]
-  }
+  if (selected?.length) addPaths(selected)
+}
+
+function addPaths(paths: string[]) {
+  files.value = [...files.value, ...paths]
 }
 
 function remove(i: number) {
@@ -54,21 +58,26 @@ async function run() {
 </script>
 
 <template>
-  <section class="tool">
-    <h1>图片转 PDF</h1>
-    <p class="desc">按顺序将图片合成为多页 PDF。支持 JPG / PNG / WEBP。</p>
-    <FileDropzone
-      accept-label="添加图片"
-      :multiple="true"
-      :files="files"
-      @pick="pick"
-      @remove="remove"
-      @move="move"
-      @clear="files = []"
-    />
-    <button class="run" type="button" :disabled="loading" @click="run">生成 PDF</button>
-    <ProgressPanel :loading="loading" :error="error" :message="message" />
-    <ResultActions :paths="outputs" />
-  </section>
+  <Card>
+    <CardHeader>
+      <CardTitle>图片转 PDF</CardTitle>
+      <CardDescription>按顺序将图片合成为多页 PDF，支持 JPG / PNG / WEBP。</CardDescription>
+    </CardHeader>
+    <CardContent class="space-y-4">
+      <FileDropzone
+        accept-label="添加图片"
+        :multiple="true"
+        :files="files"
+        :accept-exts="['.jpg', '.jpeg', '.png', '.webp']"
+        @pick="pick"
+        @paths="addPaths"
+        @remove="remove"
+        @move="move"
+        @clear="files = []"
+      />
+      <Button type="button" :disabled="loading" @click="run">生成 PDF</Button>
+      <ProgressPanel :loading="loading" :error="error" :message="message" />
+      <ResultActions :paths="outputs" />
+    </CardContent>
+  </Card>
 </template>
-

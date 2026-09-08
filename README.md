@@ -42,9 +42,11 @@ go build -o ipdf.exe .
 
 ## 技术栈
 
-- Wails v2 + Vue 3 + TypeScript + vue-router
+- Wails v2 + Vue 3 + TypeScript + vue-router + **shadcn-vue**（Tailwind CSS）
 - [pdfcpu](https://github.com/pdfcpu/pdfcpu)：合并 / 分割 / 压缩 / 图片转 PDF
 - [go-fitz](https://github.com/gen2brain/go-fitz)：PDF 页渲染（CGO 静态链接 MuPDF）
+
+文件选择支持 **按钮选择** 与 **拖入**（Wails DragAndDrop）。
 
 ## 限制（第一期）
 
