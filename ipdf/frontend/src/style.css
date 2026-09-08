@@ -43,20 +43,12 @@ a {
 }
 
 .tool h1 {
-  margin: 0.35rem 0 0.25rem;
+  margin: 0 0 0.25rem;
   font-size: 1.5rem;
 }
 .tool .desc {
   margin: 0 0 1rem;
   color: var(--muted);
-}
-.tool .back {
-  font-size: 0.875rem;
-  text-decoration: none;
-  color: var(--muted);
-}
-.tool .back:hover {
-  color: var(--accent);
 }
 .tool .run {
   margin-top: 1rem;

@@ -62,5 +62,5 @@ ipdf/
   internal/pdf/             # 工具实现
   internal/fitzstub/        # MinGW 链接 MuPDF 静态库的兼容 stub
   internal/job/             # 临时工作区
-  frontend/src/views/       # 工具 UI
+  frontend/src/views/       # 工具 UI（侧边栏导航）
 ```

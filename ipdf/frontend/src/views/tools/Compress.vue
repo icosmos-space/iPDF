@@ -42,7 +42,6 @@ async function run() {
 
 <template>
   <section class="tool">
-    <router-link class="back" to="/">← 返回工具列表</router-link>
     <h1>PDF 压缩</h1>
     <p class="desc">通过优化 PDF 内部结构减小体积。效果因文件而异。</p>
     <FileDropzone

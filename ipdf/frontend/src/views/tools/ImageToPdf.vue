@@ -55,7 +55,6 @@ async function run() {
 
 <template>
   <section class="tool">
-    <router-link class="back" to="/">← 返回工具列表</router-link>
     <h1>图片转 PDF</h1>
     <p class="desc">按顺序将图片合成为多页 PDF。支持 JPG / PNG / WEBP。</p>
     <FileDropzone

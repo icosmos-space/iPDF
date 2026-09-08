@@ -55,7 +55,6 @@ async function run() {
 
 <template>
   <section class="tool">
-    <router-link class="back" to="/">← 返回工具列表</router-link>
     <h1>PDF 合并</h1>
     <p class="desc">按列表顺序合并多个 PDF。可用上下箭头调整顺序。</p>
     <FileDropzone

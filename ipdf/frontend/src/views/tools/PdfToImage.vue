@@ -43,7 +43,6 @@ async function run() {
 
 <template>
   <section class="tool">
-    <router-link class="back" to="/">← 返回工具列表</router-link>
     <h1>PDF 转图片</h1>
     <p class="desc">将每一页渲染为 JPG / PNG（go-fitz / MuPDF，静态链接进本机程序）。</p>
     <FileDropzone

@@ -55,7 +55,6 @@ async function run() {
 
 <template>
   <section class="tool">
-    <router-link class="back" to="/">← 返回工具列表</router-link>
     <h1>PDF 分割</h1>
     <p class="desc">按页拆分、按范围提取，或按每 N 页生成多个文件。</p>
     <FileDropzone
