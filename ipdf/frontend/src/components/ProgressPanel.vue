@@ -21,8 +21,8 @@ defineProps<{
       <AlertTitle>出错了</AlertTitle>
       <AlertDescription>{{ error }}</AlertDescription>
     </Alert>
-    <Alert v-else-if="message" class="border-emerald-200 bg-emerald-50 text-emerald-900">
-      <CheckCircle2 class="size-4 text-emerald-600" />
+    <Alert v-else-if="message" class="border-foreground/20 bg-secondary text-foreground">
+      <CheckCircle2 class="size-4" />
       <AlertTitle>完成</AlertTitle>
       <AlertDescription>{{ message }}</AlertDescription>
     </Alert>
